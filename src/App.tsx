@@ -7,6 +7,7 @@ import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { Button } from "./components/ui/button";
 import { PdfHalfCanvas } from "./components/PdfHalfCanvas";
 import { useSystemTheme } from "./hooks/useSystemTheme";
+import { detectNotesLayout, type NotesLayout } from "./lib/notes-layout";
 import {
     ChevronLeft,
     ChevronRight,
@@ -27,6 +28,7 @@ const App = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const loadingTaskRef = useRef<PDFDocumentLoadingTask | null>(null);
     const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
+    const [layout, setLayout] = useState<NotesLayout>("none");
     const [fileName, setFileName] = useState<string>("");
     const [page, setPage] = useState(1);
     const [popup, setPopup] = useState<Popup | null>(null);
@@ -48,9 +50,11 @@ const App = () => {
             const data = new Uint8Array(await file.arrayBuffer());
             const task = pdfjsLib.getDocument({ data, disableFontFace: true });
             const loaded = await task.promise;
+            const detectedLayout = await detectNotesLayout(loaded);
             const previousTask = loadingTaskRef.current;
             loadingTaskRef.current = task;
             setDoc(loaded);
+            setLayout(detectedLayout);
             previousTask?.destroy();
             setFileName(file.name);
             setPage(1);
@@ -211,12 +215,19 @@ const App = () => {
                                 Notes
                             </span>
                             <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
-                                <PdfHalfCanvas
-                                    doc={doc}
-                                    pageNumber={page}
-                                    half="right"
-                                    background="transparent"
-                                />
+                                {layout === "none" ? (
+                                    <div className="flex h-full items-center justify-center text-sm opacity-70">
+                                        This PDF has no notes.
+                                    </div>
+                                ) : (
+                                    <PdfHalfCanvas
+                                        doc={doc}
+                                        pageNumber={page}
+                                        layout={layout}
+                                        part="notes"
+                                        background="transparent"
+                                    />
+                                )}
                             </div>
                         </section>
 
@@ -230,7 +241,8 @@ const App = () => {
                                         <PdfHalfCanvas
                                             doc={doc}
                                             pageNumber={page}
-                                            half="left"
+                                            layout={layout}
+                                            part="slide"
                                         />
                                     </div>
                                 </div>
@@ -243,7 +255,8 @@ const App = () => {
                                             <PdfHalfCanvas
                                                 doc={doc}
                                                 pageNumber={page + 1}
-                                                half="left"
+                                                layout={layout}
+                                                part="slide"
                                             />
                                         ) : (
                                             <div className="flex h-full items-center justify-center bg-black text-sm text-white/70">
@@ -257,8 +270,8 @@ const App = () => {
                     </>
                 ) : (
                     <div className="flex h-full w-full items-center justify-center rounded-md border text-sm opacity-70">
-                        Select a Beamer PDF with notes (slides on the left,
-                        notes on the right).
+                        Select a Beamer PDF, optionally with notes on the right
+                        or at the bottom.
                     </div>
                 )}
             </main>
@@ -266,7 +279,12 @@ const App = () => {
             {doc &&
                 popup &&
                 createPortal(
-                    <PdfHalfCanvas doc={doc} pageNumber={page} half="left" />,
+                    <PdfHalfCanvas
+                        doc={doc}
+                        pageNumber={page}
+                        layout={layout}
+                        part="slide"
+                    />,
                     popup.mount,
                 )}
         </div>

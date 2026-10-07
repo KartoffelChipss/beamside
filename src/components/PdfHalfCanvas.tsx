@@ -1,19 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import type { PDFDocumentProxy } from "pdfjs-dist";
+import { useEffect, useRef, useState } from 'react';
+import type { PDFDocumentProxy } from 'pdfjs-dist';
+import type { NotesLayout } from '@/lib/notes-layout';
 
 type Props = {
     doc: PDFDocumentProxy;
     pageNumber: number;
-    half: "left" | "right";
+    layout: NotesLayout;
+    part: 'slide' | 'notes';
     background?: string;
 };
 
-export const PdfHalfCanvas = ({
-    doc,
-    pageNumber,
-    half,
-    background = "#000",
-}: Props) => {
+export const PdfHalfCanvas = ({ doc, pageNumber, layout, part, background = '#000' }: Props) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [size, setSize] = useState({ width: 0, height: 0 });
@@ -46,29 +43,30 @@ export const PdfHalfCanvas = ({
             if (cancelled) return;
 
             const base = page.getViewport({ scale: 1 });
-            const halfWidth = base.width / 2;
+            const cols = layout === 'right' ? 2 : 1;
+            const rows = layout === 'bottom' ? 2 : 1;
 
             const fit = Math.min(
-                size.width / halfWidth,
-                size.height / base.height,
+                size.width / (base.width / cols),
+                size.height / (base.height / rows)
             );
-            const dpr =
-                (canvas.ownerDocument.defaultView ?? window).devicePixelRatio ||
-                1;
+            const dpr = (canvas.ownerDocument.defaultView ?? window).devicePixelRatio || 1;
             const viewport = page.getViewport({ scale: fit * dpr });
 
-            const width = Math.floor(viewport.width / 2);
-            const height = Math.floor(viewport.height);
-            const offscreen = canvas.ownerDocument.createElement("canvas");
+            const width = Math.floor(viewport.width / cols);
+            const height = Math.floor(viewport.height / rows);
+            const offscreen = canvas.ownerDocument.createElement('canvas');
             offscreen.width = width;
             offscreen.height = height;
 
-            const offsetX = half === "right" ? -viewport.width / 2 : 0;
+            const isNotes = part === 'notes';
+            const offsetX = isNotes && layout === 'right' ? -width : 0;
+            const offsetY = isNotes && layout === 'bottom' ? -height : 0;
 
             renderTask = page.render({
                 canvas: offscreen,
                 viewport,
-                transform: [1, 0, 0, 1, offsetX, 0],
+                transform: [1, 0, 0, 1, offsetX, offsetY],
             });
             try {
                 await renderTask.promise;
@@ -77,7 +75,7 @@ export const PdfHalfCanvas = ({
             }
             if (cancelled) return;
 
-            const ctx = canvas.getContext("2d");
+            const ctx = canvas.getContext('2d');
             if (!ctx) return;
             canvas.width = width;
             canvas.height = height;
@@ -99,19 +97,19 @@ export const PdfHalfCanvas = ({
             cancelled = true;
             renderTask?.cancel();
         };
-    }, [doc, pageNumber, half, size]);
+    }, [doc, pageNumber, layout, part, size]);
 
     return (
         <div
             ref={containerRef}
             style={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 background,
-                overflow: "hidden",
+                overflow: 'hidden',
             }}
         >
             <canvas ref={canvasRef} />
