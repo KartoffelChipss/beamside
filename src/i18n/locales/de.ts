@@ -103,5 +103,8 @@ export const de: typeof en = {
         },
         timer: 'Timer',
         timerDescription: 'Misst, wie lange deine Präsentation dauert.',
+        laserPointer: 'Laserpointer',
+        laserPointerDescription:
+            'Zeige mit der Maus auf deine Folien, im Folienfenster oder auf der aktuellen Folie.',
     },
 };

@@ -98,5 +98,8 @@ export const en = {
         },
         timer: 'Timer',
         timerDescription: 'Measure how long your presentation takes.',
+        laserPointer: 'Laser pointer',
+        laserPointerDescription:
+            'Point at your slides with the mouse, in the slides window or on the current slide.',
     },
 };

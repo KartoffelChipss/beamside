@@ -12,6 +12,7 @@ export type Settings = {
     theme: Theme;
     presenterLayout: PresenterLayout;
     showTimer: boolean;
+    laserPointer: boolean;
 };
 
 const DEFAULT_SETTINGS: Settings = {
@@ -19,6 +20,7 @@ const DEFAULT_SETTINGS: Settings = {
     theme: 'system',
     presenterLayout: DEFAULT_PRESENTER_LAYOUT,
     showTimer: true,
+    laserPointer: true,
 };
 
 const STORAGE_KEY = 'beamside-settings';

@@ -126,6 +126,14 @@ export const SettingsDialog = ({ settings, onChange }: Props) => {
                             checked={settings.showTimer}
                             onCheckedChange={(showTimer) => onChange({ ...settings, showTimer })}
                         />
+                        <SwitchRow
+                            label={t('settings.laserPointer')}
+                            description={t('settings.laserPointerDescription')}
+                            checked={settings.laserPointer}
+                            onCheckedChange={(laserPointer) =>
+                                onChange({ ...settings, laserPointer })
+                            }
+                        />
                     </SettingsSection>
                 </DialogPanel>
             </DialogPopup>

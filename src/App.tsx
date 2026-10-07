@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from './components/ui/button';
 import { AppBrand } from './components/AppBrand';
 import { GetStarted } from './components/GetStarted';
-import { PdfHalfCanvas } from './components/PdfHalfCanvas';
+import { PdfHalfCanvas, type LaserPosition } from './components/PdfHalfCanvas';
 import { PresentationTimer } from './components/PresentationTimer';
 import { PresenterGrid } from './components/PresenterGrid';
 import { SlidesWindowButton } from './components/SlidesWindowButton';
@@ -27,6 +27,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 type Popup = { win: Window; mount: HTMLDivElement };
 type AppError = 'readFailed' | 'popupBlocked';
 
+const LASER_IDLE_MS = 2500;
+
 const setWindowTitle = (win: Window, title: string) => {
     win.document.title = title;
 };
@@ -42,6 +44,8 @@ const App = () => {
     const [fileName, setFileName] = useState<string>('');
     const [page, setPage] = useState(1);
     const [popup, setPopup] = useState<Popup | null>(null);
+    const [laser, setLaser] = useState<LaserPosition | null>(null);
+    const laserTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     const [error, setError] = useState<AppError | null>(null);
     const [settings, setSettings] = useState<Settings>(loadSettings);
     const [slidesHintDismissed, setSlidesHintDismissed] = useState(() =>
@@ -56,6 +60,13 @@ const App = () => {
     };
 
     const pageCount = doc?.numPages ?? 0;
+
+    const moveLaser = (position: LaserPosition | null) => {
+        clearTimeout(laserTimeoutRef.current);
+        setLaser(position);
+        if (position) laserTimeoutRef.current = setTimeout(() => setLaser(null), LASER_IDLE_MS);
+    };
+    const laserProps = settings.laserPointer ? { laser, onLaserMove: moveLaser } : {};
 
     const goTo = useCallback(
         (n: number) => setPage((_) => Math.min(Math.max(n, 1), Math.max(pageCount, 1))),
@@ -271,6 +282,7 @@ const App = () => {
                                             pageNumber={page}
                                             layout={layout}
                                             part="slide"
+                                            {...laserProps}
                                         />
                                     )}
                                     {pane === 'next' &&
@@ -332,7 +344,13 @@ const App = () => {
             {doc &&
                 popup &&
                 createPortal(
-                    <PdfHalfCanvas doc={doc} pageNumber={page} layout={layout} part="slide" />,
+                    <PdfHalfCanvas
+                        doc={doc}
+                        pageNumber={page}
+                        layout={layout}
+                        part="slide"
+                        {...laserProps}
+                    />,
                     popup.mount
                 )}
         </div>
