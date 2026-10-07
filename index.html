@@ -9,5 +9,15 @@
     <body>
         <div id="root"></div>
         <script type="module" src="/src/main.tsx"></script>
+        <script>
+            (function () {
+                var stored = localStorage.getItem("theme");
+                var prefersDark = window.matchMedia(
+                    "(prefers-color-scheme: dark)",
+                ).matches;
+                var dark = stored ? stored === "dark" : prefersDark;
+                document.documentElement.classList.toggle("dark", dark);
+            })();
+        </script>
     </body>
 </html>
