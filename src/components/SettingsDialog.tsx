@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { LANGUAGES, type LanguagePreference } from '@/i18n';
 import type { Settings, Theme } from '@/lib/settings';
+import { PresenterLayoutSettings } from './PresenterLayoutSettings';
 import { Button } from './ui/button';
 import {
     Dialog,
@@ -26,8 +27,6 @@ type Props = {
 
 export const SettingsDialog = ({ settings, onChange }: Props) => {
     const { t } = useTranslation();
-    const toggle = (key: 'showCurrent' | 'showNext' | 'showTimer') => (checked: boolean) =>
-        onChange({ ...settings, [key]: checked });
 
     const languageItems: { value: LanguagePreference; label: string }[] = [
         { value: 'system', label: t('settings.languageSystem') },
@@ -55,7 +54,7 @@ export const SettingsDialog = ({ settings, onChange }: Props) => {
                     </Button>
                 }
             />
-            <DialogPopup className="sm:max-w-lg">
+            <DialogPopup className="sm:max-w-xl">
                 <DialogHeader>
                     <DialogTitle>{t('settings.title')}</DialogTitle>
                     <DialogDescription>{t('settings.description')}</DialogDescription>
@@ -115,23 +114,17 @@ export const SettingsDialog = ({ settings, onChange }: Props) => {
                         </SettingRow>
                     </SettingsSection>
                     <SettingsSection title={t('settings.presenterView')}>
-                        <SwitchRow
-                            label={t('settings.currentSlide')}
-                            description={t('settings.currentSlideDescription')}
-                            checked={settings.showCurrent}
-                            onCheckedChange={toggle('showCurrent')}
-                        />
-                        <SwitchRow
-                            label={t('settings.nextSlide')}
-                            description={t('settings.nextSlideDescription')}
-                            checked={settings.showNext}
-                            onCheckedChange={toggle('showNext')}
+                        <PresenterLayoutSettings
+                            value={settings.presenterLayout}
+                            onChange={(presenterLayout) =>
+                                onChange({ ...settings, presenterLayout })
+                            }
                         />
                         <SwitchRow
                             label={t('settings.timer')}
                             description={t('settings.timerDescription')}
                             checked={settings.showTimer}
-                            onCheckedChange={toggle('showTimer')}
+                            onCheckedChange={(showTimer) => onChange({ ...settings, showTimer })}
                         />
                     </SettingsSection>
                 </DialogPanel>

@@ -10,6 +10,7 @@ import { AppBrand } from './components/AppBrand';
 import { GetStarted } from './components/GetStarted';
 import { PdfHalfCanvas } from './components/PdfHalfCanvas';
 import { PresentationTimer } from './components/PresentationTimer';
+import { PresenterGrid } from './components/PresenterGrid';
 import { SlidesWindowButton } from './components/SlidesWindowButton';
 import { SlidesWindowHint } from './components/SlidesWindowHint';
 import { SettingsDialog } from './components/SettingsDialog';
@@ -240,69 +241,55 @@ const App = () => {
 
             <main className="flex min-h-0 flex-1 gap-3">
                 {doc ? (
-                    <>
-                        <section className="flex min-w-0 flex-2 flex-col gap-1">
-                            <span className="text-xs uppercase tracking-wide opacity-70">
-                                {t('panels.notes')}
-                            </span>
-                            <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
-                                {layout === 'none' ? (
-                                    <div className="flex h-full items-center justify-center text-sm opacity-70">
-                                        {t('panels.noNotes')}
-                                    </div>
-                                ) : (
-                                    <PdfHalfCanvas
-                                        doc={doc}
-                                        pageNumber={page}
-                                        layout={layout}
-                                        part="notes"
-                                        background="transparent"
-                                    />
-                                )}
-                            </div>
-                        </section>
-
-                        {(settings.showCurrent || settings.showNext) && (
-                            <aside className="flex min-w-0 flex-1 flex-col gap-3">
-                                {settings.showCurrent && (
-                                    <div className="flex min-h-0 flex-1 flex-col gap-1">
-                                        <span className="text-xs uppercase tracking-wide opacity-70">
-                                            {t('panels.current')}
-                                        </span>
-                                        <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
+                    <PresenterGrid
+                        className="min-h-0 flex-1"
+                        layout={settings.presenterLayout.layout}
+                        slots={settings.presenterLayout.slots}
+                        renderPane={(pane) => (
+                            <>
+                                <span className="text-xs uppercase tracking-wide opacity-70">
+                                    {t(`panels.${pane}`)}
+                                </span>
+                                <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
+                                    {pane === 'notes' &&
+                                        (layout === 'none' ? (
+                                            <div className="flex h-full items-center justify-center text-sm opacity-70">
+                                                {t('panels.noNotes')}
+                                            </div>
+                                        ) : (
                                             <PdfHalfCanvas
                                                 doc={doc}
                                                 pageNumber={page}
                                                 layout={layout}
+                                                part="notes"
+                                                background="transparent"
+                                            />
+                                        ))}
+                                    {pane === 'current' && (
+                                        <PdfHalfCanvas
+                                            doc={doc}
+                                            pageNumber={page}
+                                            layout={layout}
+                                            part="slide"
+                                        />
+                                    )}
+                                    {pane === 'next' &&
+                                        (page < pageCount ? (
+                                            <PdfHalfCanvas
+                                                doc={doc}
+                                                pageNumber={page + 1}
+                                                layout={layout}
                                                 part="slide"
                                             />
-                                        </div>
-                                    </div>
-                                )}
-                                {settings.showNext && (
-                                    <div className="flex min-h-0 flex-1 flex-col gap-1">
-                                        <span className="text-xs uppercase tracking-wide opacity-70">
-                                            {t('panels.next')}
-                                        </span>
-                                        <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
-                                            {page < pageCount ? (
-                                                <PdfHalfCanvas
-                                                    doc={doc}
-                                                    pageNumber={page + 1}
-                                                    layout={layout}
-                                                    part="slide"
-                                                />
-                                            ) : (
-                                                <div className="flex h-full items-center justify-center bg-black text-sm text-white/70">
-                                                    {t('panels.endOfPresentation')}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-                            </aside>
+                                        ) : (
+                                            <div className="flex h-full items-center justify-center bg-black text-sm text-white/70">
+                                                {t('panels.endOfPresentation')}
+                                            </div>
+                                        ))}
+                                </div>
+                            </>
                         )}
-                    </>
+                    />
                 ) : (
                     <GetStarted
                         onSelect={() => fileInputRef.current?.click()}

@@ -1,20 +1,23 @@
 import type { LanguagePreference } from '@/i18n';
+import {
+    DEFAULT_PRESENTER_LAYOUT,
+    parsePresenterLayout,
+    type PresenterLayout,
+} from './presenter-layout';
 
 export type Theme = 'system' | 'light' | 'dark';
 
 export type Settings = {
     language: LanguagePreference;
     theme: Theme;
-    showCurrent: boolean;
-    showNext: boolean;
+    presenterLayout: PresenterLayout;
     showTimer: boolean;
 };
 
 const DEFAULT_SETTINGS: Settings = {
     language: 'system',
     theme: 'system',
-    showCurrent: true,
-    showNext: true,
+    presenterLayout: DEFAULT_PRESENTER_LAYOUT,
     showTimer: true,
 };
 
@@ -23,14 +26,13 @@ const LEGACY_STORAGE_KEY = 'beamerr-settings';
 
 export const loadSettings = (): Settings => {
     try {
-        return {
-            ...DEFAULT_SETTINGS,
-            ...JSON.parse(
-                localStorage.getItem(STORAGE_KEY) ??
-                    localStorage.getItem(LEGACY_STORAGE_KEY) ??
-                    '{}'
-            ),
-        };
+        const stored = JSON.parse(
+            localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY) ?? '{}'
+        );
+        const presenterLayout = parsePresenterLayout(stored);
+        delete stored.showCurrent;
+        delete stored.showNext;
+        return { ...DEFAULT_SETTINGS, ...stored, presenterLayout };
     } catch {
         return DEFAULT_SETTINGS;
     }
