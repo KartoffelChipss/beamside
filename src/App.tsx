@@ -10,20 +10,16 @@ import { AppBrand } from './components/AppBrand';
 import { GetStarted } from './components/GetStarted';
 import { PdfHalfCanvas } from './components/PdfHalfCanvas';
 import { PresentationTimer } from './components/PresentationTimer';
+import { SlidesWindowButton } from './components/SlidesWindowButton';
 import { SlidesWindowHint } from './components/SlidesWindowHint';
 import { SettingsDialog } from './components/SettingsDialog';
 import { useTheme } from './hooks/useTheme';
 import { applyLanguagePreference } from './i18n';
 import { detectNotesLayout, type NotesLayout } from './lib/notes-layout';
 import { dismissHint, isHintDismissed } from './lib/hints';
+import { addFullscreenShortcuts, openPopup, toggleFullscreen } from './lib/slides-window';
 import { loadSettings, saveSettings, type Settings } from './lib/settings';
-import {
-    ChevronLeft,
-    ChevronRight,
-    PictureInPicture,
-    PictureInPicture2,
-    Upload,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Upload } from 'lucide-react';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
@@ -97,7 +93,7 @@ const App = () => {
             return;
         }
         // Must run inside a click handler, otherwise popup blockers will stop it
-        const win = window.open('', 'beamside-slides', 'popup,width=960,height=540');
+        const win = openPopup();
         if (!win) {
             setError('popupBlocked');
             return;
@@ -115,9 +111,24 @@ const App = () => {
         mount.style.height = '100vh';
         win.document.body.appendChild(mount);
 
-        win.addEventListener('pagehide', () => setPopup(null));
+        addFullscreenShortcuts(win);
+        win.addEventListener('pagehide', () => setPopup((p) => (p?.win === win ? null : p)));
         setPopup({ win, mount });
     };
+
+    const closeSlidesWindow = () => {
+        popup?.win.close();
+        setPopup(null);
+    };
+
+    // pagehide isn't reliable enough so we poll ¯\_(ツ)_/¯
+    useEffect(() => {
+        if (!popup) return;
+        const id = setInterval(() => {
+            if (popup.win.closed) setPopup((p) => (p === popup ? null : p));
+        }, 500);
+        return () => clearInterval(id);
+    }, [popup]);
 
     useEffect(() => {
         if (popup) setWindowTitle(popup.win, t('app.slidesWindowTitle', { name: fileName }));
@@ -133,7 +144,12 @@ const App = () => {
     // Keyboard navigation in both windows
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
-            if (e.target instanceof Element && e.target.closest('[role=dialog]')) return;
+            // Leave keys to dialogs, menus and dropdowns, they use arrows and Space themselves
+            if (
+                e.target instanceof Element &&
+                e.target.closest('[role=dialog], [role=menu], [role=listbox]')
+            )
+                return;
             switch (e.key) {
                 case 'ArrowRight':
                 case 'ArrowDown':
@@ -154,6 +170,11 @@ const App = () => {
                 case 'End':
                     setPage(pageCount);
                     break;
+                case 'f':
+                case 'F':
+                    if (popup && e.view === window && !e.metaKey && !e.ctrlKey && !e.altKey)
+                        toggleFullscreen(popup.win, t('slidesWindow.fullscreenPrompt'));
+                    break;
             }
         };
         window.addEventListener('keydown', onKey);
@@ -162,7 +183,7 @@ const App = () => {
             window.removeEventListener('keydown', onKey);
             popup?.win.removeEventListener('keydown', onKey);
         };
-    }, [popup, pageCount]);
+    }, [popup, pageCount, t]);
 
     return (
         <div className="flex h-screen flex-col gap-3 p-4">
@@ -195,19 +216,13 @@ const App = () => {
                                 <Upload />
                                 <span className="max-md:sr-only">{t('app.changePdf')}</span>
                             </Button>
-                            <Button
-                                ref={slidesButtonRef}
-                                variant="secondary"
-                                aria-label={
-                                    popup ? t('app.focusSlidesWindow') : t('app.openSlidesWindow')
-                                }
-                                onClick={openSlidesWindow}
-                            >
-                                {popup ? <PictureInPicture /> : <PictureInPicture2 />}
-                                <span className="max-md:sr-only">
-                                    {popup ? t('app.focusSlidesWindow') : t('app.openSlidesWindow')}
-                                </span>
-                            </Button>
+                            <SlidesWindowButton
+                                isOpen={!!popup}
+                                getWindow={() => popup?.win ?? null}
+                                buttonRef={slidesButtonRef}
+                                onOpen={openSlidesWindow}
+                                onClose={closeSlidesWindow}
+                            />
                         </>
                     )}
                     <SettingsDialog settings={settings} onChange={updateSettings} />

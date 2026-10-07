@@ -31,15 +31,24 @@ export const en = {
         step2Body: 'Beamside detects where your notes are.',
         step3Title: 'Open the slides window',
         step3Body:
-            'Move it to the projector and make it fullscreen. Use <arrows/> or <kbd>Space</kbd> to move between slides.',
+            'Move it to the projector and press <kbd>F</kbd> for fullscreen. Use <arrows/> or <kbd>Space</kbd> to move between slides.',
     },
     hints: {
         dismiss: 'Got it',
         slidesWindow: {
             title: 'Show your slides to the audience',
             description:
-                'Open the slides window, move it to the projector, and make it fullscreen. This window stays your presenter view.',
+                'Open the slides window, move it to the projector, and press F for fullscreen. This window stays your presenter view.',
         },
+    },
+    slidesWindow: {
+        menu: 'Slides window options',
+        fullscreen: 'Fullscreen',
+        exitFullscreen: 'Exit fullscreen',
+        fullscreenPrompt: 'Click anywhere to go fullscreen',
+        maximize: 'Maximize',
+        restore: 'Restore size',
+        close: 'Close slides window',
     },
     timer: {
         label: 'Presentation time',
