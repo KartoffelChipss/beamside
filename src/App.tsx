@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import * as pdfjsLib from "pdfjs-dist";
-import type { PDFDocumentLoadingTask, PDFDocumentProxy } from "pdfjs-dist";
-import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import * as pdfjsLib from 'pdfjs-dist';
+import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist';
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
-import { Button } from "./components/ui/button";
-import { PdfHalfCanvas } from "./components/PdfHalfCanvas";
-import { useSystemTheme } from "./hooks/useSystemTheme";
-import { detectNotesLayout, type NotesLayout } from "./lib/notes-layout";
+import { Button } from './components/ui/button';
+import { GetStarted } from './components/GetStarted';
+import { PdfHalfCanvas } from './components/PdfHalfCanvas';
+import { useSystemTheme } from './hooks/useSystemTheme';
+import { detectNotesLayout, type NotesLayout } from './lib/notes-layout';
 import {
     ChevronLeft,
     ChevronRight,
@@ -16,7 +17,7 @@ import {
     PictureInPicture,
     PictureInPicture2,
     Upload,
-} from "lucide-react";
+} from 'lucide-react';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
@@ -28,24 +29,23 @@ const App = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const loadingTaskRef = useRef<PDFDocumentLoadingTask | null>(null);
     const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
-    const [layout, setLayout] = useState<NotesLayout>("none");
-    const [fileName, setFileName] = useState<string>("");
+    const [layout, setLayout] = useState<NotesLayout>('none');
+    const [fileName, setFileName] = useState<string>('');
     const [page, setPage] = useState(1);
     const [popup, setPopup] = useState<Popup | null>(null);
-    const [error, setError] = useState<string>("");
+    const [error, setError] = useState<string>('');
     const [showPreviews, setShowPreviews] = useState(true);
 
     const pageCount = doc?.numPages ?? 0;
 
     const goTo = useCallback(
-        (n: number) =>
-            setPage((_) => Math.min(Math.max(n, 1), Math.max(pageCount, 1))),
-        [pageCount],
+        (n: number) => setPage((_) => Math.min(Math.max(n, 1), Math.max(pageCount, 1))),
+        [pageCount]
     );
 
     const handleFile = async (file: File | undefined) => {
         if (!file) return;
-        setError("");
+        setError('');
         try {
             const data = new Uint8Array(await file.arrayBuffer());
             const task = pdfjsLib.getDocument({ data, disableFontFace: true });
@@ -59,9 +59,7 @@ const App = () => {
             setFileName(file.name);
             setPage(1);
         } catch (e) {
-            setError(
-                e instanceof Error ? e.message : "Could not read that PDF.",
-            );
+            setError(e instanceof Error ? e.message : 'Could not read that PDF.');
         }
     };
 
@@ -71,73 +69,65 @@ const App = () => {
             return;
         }
         // Must run inside a click handler, otherwise popup blockers will stop it
-        const win = window.open(
-            "",
-            "beamerr-slides",
-            "popup,width=960,height=540",
-        );
+        const win = window.open('', 'beamerr-slides', 'popup,width=960,height=540');
         if (!win) {
-            setError(
-                "The slides window was blocked. Allow popups for this site and try again.",
-            );
+            setError('The slides window was blocked. Allow popups for this site and try again.');
             return;
         }
         win.document.title = `Slides - ${fileName}`;
 
-        document
-            .querySelectorAll('link[rel="stylesheet"], style')
-            .forEach((node) => {
-                win.document.head.appendChild(node.cloneNode(true));
-            });
-        win.document.body.style.margin = "0";
-        win.document.body.style.background = "#000";
+        document.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
+            win.document.head.appendChild(node.cloneNode(true));
+        });
+        win.document.body.style.margin = '0';
+        win.document.body.style.background = '#000';
 
-        const mount = win.document.createElement("div");
-        mount.style.width = "100vw";
-        mount.style.height = "100vh";
+        const mount = win.document.createElement('div');
+        mount.style.width = '100vw';
+        mount.style.height = '100vh';
         win.document.body.appendChild(mount);
 
-        win.addEventListener("pagehide", () => setPopup(null));
+        win.addEventListener('pagehide', () => setPopup(null));
         setPopup({ win, mount });
     };
 
     // Close the popup when the main window goes away
     useEffect(() => {
         const close = () => popup?.win.close();
-        window.addEventListener("beforeunload", close);
-        return () => window.removeEventListener("beforeunload", close);
+        window.addEventListener('beforeunload', close);
+        return () => window.removeEventListener('beforeunload', close);
     }, [popup]);
 
     // Keyboard navigation in both windows
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             switch (e.key) {
-                case "ArrowRight":
-                case "ArrowDown":
-                case "PageDown":
-                case " ":
+                case 'ArrowRight':
+                case 'ArrowDown':
+                case 'PageDown':
+                case ' ':
                     e.preventDefault();
                     setPage((p) => Math.min(p + 1, pageCount));
                     break;
-                case "ArrowLeft":
-                case "ArrowUp":
-                case "PageUp":
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                case 'PageUp':
                     e.preventDefault();
                     setPage((p) => Math.max(p - 1, 1));
                     break;
-                case "Home":
+                case 'Home':
                     setPage(1);
                     break;
-                case "End":
+                case 'End':
                     setPage(pageCount);
                     break;
             }
         };
-        window.addEventListener("keydown", onKey);
-        popup?.win.addEventListener("keydown", onKey);
+        window.addEventListener('keydown', onKey);
+        popup?.win.addEventListener('keydown', onKey);
         return () => {
-            window.removeEventListener("keydown", onKey);
-            popup?.win.removeEventListener("keydown", onKey);
+            window.removeEventListener('keydown', onKey);
+            popup?.win.removeEventListener('keydown', onKey);
         };
     }, [popup, pageCount]);
 
@@ -153,37 +143,24 @@ const App = () => {
                     className="hidden"
                     onChange={(e) => handleFile(e.target.files?.[0])}
                 />
-                <Button
-                    variant="default"
-                    onClick={() => fileInputRef.current?.click()}
-                >
-                    <Upload />
-                    {doc ? "Change PDF" : "Select PDF"}
-                </Button>
-
                 {doc && (
                     <>
-                        <Button variant="secondary" onClick={openSlidesWindow}>
-                            {popup ? (
-                                <PictureInPicture />
-                            ) : (
-                                <PictureInPicture2 />
-                            )}
-                            {popup
-                                ? "Focus slides window"
-                                : "Open slides window"}
+                        <Button variant="default" onClick={() => fileInputRef.current?.click()}>
+                            <Upload />
+                            Change PDF
                         </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={() => setShowPreviews((v) => !v)}
-                        >
+                        <Button variant="secondary" onClick={openSlidesWindow}>
+                            {popup ? <PictureInPicture /> : <PictureInPicture2 />}
+                            {popup ? 'Focus slides window' : 'Open slides window'}
+                        </Button>
+                        <Button variant="secondary" onClick={() => setShowPreviews((v) => !v)}>
                             {showPreviews ? <EyeOff /> : <Eye />}
-                            {showPreviews ? "Hide previews" : "Show previews"}
+                            {showPreviews ? 'Hide previews' : 'Show previews'}
                         </Button>
                         <div className="ml-auto flex items-center gap-2">
                             <Button
                                 variant="outline"
-                                size={"icon-sm"}
+                                size={'icon-sm'}
                                 onClick={() => goTo(page - 1)}
                                 disabled={page <= 1}
                             >
@@ -194,7 +171,7 @@ const App = () => {
                             </span>
                             <Button
                                 variant="outline"
-                                size={"icon-sm"}
+                                size={'icon-sm'}
                                 onClick={() => goTo(page + 1)}
                                 disabled={page >= pageCount}
                             >
@@ -215,7 +192,7 @@ const App = () => {
                                 Notes
                             </span>
                             <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
-                                {layout === "none" ? (
+                                {layout === 'none' ? (
                                     <div className="flex h-full items-center justify-center text-sm opacity-70">
                                         This PDF has no notes.
                                     </div>
@@ -269,23 +246,18 @@ const App = () => {
                         )}
                     </>
                 ) : (
-                    <div className="flex h-full w-full items-center justify-center rounded-md border text-sm opacity-70">
-                        Select a Beamer PDF, optionally with notes on the right
-                        or at the bottom.
-                    </div>
+                    <GetStarted
+                        onSelect={() => fileInputRef.current?.click()}
+                        onFile={handleFile}
+                    />
                 )}
             </main>
 
             {doc &&
                 popup &&
                 createPortal(
-                    <PdfHalfCanvas
-                        doc={doc}
-                        pageNumber={page}
-                        layout={layout}
-                        part="slide"
-                    />,
-                    popup.mount,
+                    <PdfHalfCanvas doc={doc} pageNumber={page} layout={layout} part="slide" />,
+                    popup.mount
                 )}
         </div>
     );
