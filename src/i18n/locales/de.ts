@@ -38,6 +38,14 @@ export const de: typeof en = {
         step3Body:
             'Schiebe es auf den Beamer und schalte es in den Vollbildmodus. Mit <arrows/> oder <kbd>Leertaste</kbd> wechselst du die Folien.',
     },
+    hints: {
+        dismiss: 'Verstanden',
+        slidesWindow: {
+            title: 'Zeig deinem Publikum die Folien',
+            description:
+                'Öffne das Folienfenster, schiebe es auf den Beamer und schalte es in den Vollbildmodus. Dieses Fenster bleibt deine Referentenansicht.',
+        },
+    },
     timer: {
         label: 'Präsentationszeit',
         start: 'Timer starten',

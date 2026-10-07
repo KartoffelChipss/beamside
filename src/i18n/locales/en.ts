@@ -33,6 +33,14 @@ export const en = {
         step3Body:
             'Move it to the projector and make it fullscreen. Use <arrows/> or <kbd>Space</kbd> to move between slides.',
     },
+    hints: {
+        dismiss: 'Got it',
+        slidesWindow: {
+            title: 'Show your slides to the audience',
+            description:
+                'Open the slides window, move it to the projector, and make it fullscreen. This window stays your presenter view.',
+        },
+    },
     timer: {
         label: 'Presentation time',
         start: 'Start timer',

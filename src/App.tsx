@@ -10,10 +10,12 @@ import { AppBrand } from './components/AppBrand';
 import { GetStarted } from './components/GetStarted';
 import { PdfHalfCanvas } from './components/PdfHalfCanvas';
 import { PresentationTimer } from './components/PresentationTimer';
+import { SlidesWindowHint } from './components/SlidesWindowHint';
 import { SettingsDialog } from './components/SettingsDialog';
 import { useTheme } from './hooks/useTheme';
 import { applyLanguagePreference } from './i18n';
 import { detectNotesLayout, type NotesLayout } from './lib/notes-layout';
+import { dismissHint, isHintDismissed } from './lib/hints';
 import { loadSettings, saveSettings, type Settings } from './lib/settings';
 import {
     ChevronLeft,
@@ -37,6 +39,7 @@ const App = () => {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const loadingTaskRef = useRef<PDFDocumentLoadingTask | null>(null);
+    const slidesButtonRef = useRef<HTMLButtonElement>(null);
     const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
     const [layout, setLayout] = useState<NotesLayout>('none');
     const [fileName, setFileName] = useState<string>('');
@@ -44,6 +47,9 @@ const App = () => {
     const [popup, setPopup] = useState<Popup | null>(null);
     const [error, setError] = useState<AppError | null>(null);
     const [settings, setSettings] = useState<Settings>(loadSettings);
+    const [slidesHintDismissed, setSlidesHintDismissed] = useState(() =>
+        isHintDismissed('slidesWindow')
+    );
     useTheme(settings.theme);
 
     const updateSettings = (next: Settings) => {
@@ -80,6 +86,11 @@ const App = () => {
         }
     };
 
+    const dismissSlidesHint = () => {
+        dismissHint('slidesWindow');
+        setSlidesHintDismissed(true);
+    };
+
     const openSlidesWindow = () => {
         if (popup && !popup.win.closed) {
             popup.win.focus();
@@ -91,6 +102,8 @@ const App = () => {
             setError('popupBlocked');
             return;
         }
+        dismissSlidesHint();
+        setError(null);
         document.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
             win.document.head.appendChild(node.cloneNode(true));
         });
@@ -156,7 +169,10 @@ const App = () => {
             <header className="flex items-center gap-3">
                 <AppBrand />
                 {doc && (
-                    <span className="min-w-0 truncate text-sm text-muted-foreground" title={fileName}>
+                    <span
+                        className="min-w-0 truncate text-sm text-muted-foreground"
+                        title={fileName}
+                    >
                         {fileName}
                     </span>
                 )}
@@ -180,8 +196,11 @@ const App = () => {
                                 <span className="max-md:sr-only">{t('app.changePdf')}</span>
                             </Button>
                             <Button
+                                ref={slidesButtonRef}
                                 variant="secondary"
-                                aria-label={popup ? t('app.focusSlidesWindow') : t('app.openSlidesWindow')}
+                                aria-label={
+                                    popup ? t('app.focusSlidesWindow') : t('app.openSlidesWindow')
+                                }
                                 onClick={openSlidesWindow}
                             >
                                 {popup ? <PictureInPicture /> : <PictureInPicture2 />}
@@ -194,6 +213,13 @@ const App = () => {
                     <SettingsDialog settings={settings} onChange={updateSettings} />
                 </div>
             </header>
+
+            <SlidesWindowHint
+                open={!!doc && !popup && !slidesHintDismissed}
+                anchor={slidesButtonRef}
+                onOpenSlidesWindow={openSlidesWindow}
+                onDismiss={dismissSlidesHint}
+            />
 
             {error && <p className="text-sm text-red-500">{t(`errors.${error}`)}</p>}
 
@@ -272,7 +298,9 @@ const App = () => {
 
             {doc && (
                 <footer className="flex items-center justify-between gap-3 sm:grid sm:grid-cols-[1fr_auto_1fr]">
-                    <div className="flex min-w-0">{settings.showTimer && <PresentationTimer />}</div>
+                    <div className="flex min-w-0">
+                        {settings.showTimer && <PresentationTimer />}
+                    </div>
                     <div className="flex items-center gap-2">
                         <Button
                             variant="outline"
