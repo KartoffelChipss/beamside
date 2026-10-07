@@ -74,7 +74,8 @@ export const de: typeof en = {
             title: 'Präsentieren',
             select: 'Wähle deine PDF aus oder ziehe sie auf den Startbildschirm.',
             open: 'Klicke auf <b>Folienfenster öffnen</b>, schiebe das Fenster auf den Beamer und drücke <kbd>F</kbd> für den Vollbildmodus.',
-            presenter: 'Behalte dieses Fenster als Referentenansicht auf deinem eigenen Bildschirm.',
+            presenter:
+                'Behalte dieses Fenster als Referentenansicht auf deinem eigenen Bildschirm.',
         },
         shortcuts: {
             title: 'Tastenkürzel',

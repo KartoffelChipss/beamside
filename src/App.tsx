@@ -68,7 +68,9 @@ const App = () => {
     });
     // A tool hidden in settings can't stay selected
     const tool =
-        annotations.tool !== 'none' && settings.toolbar[annotations.tool] ? annotations.tool : 'none';
+        annotations.tool !== 'none' && settings.toolbar[annotations.tool]
+            ? annotations.tool
+            : 'none';
     const slideOverlay = <SlideOverlay {...annotations.forPage(page)} tool={tool} />;
 
     const goTo = useCallback(
@@ -360,12 +362,7 @@ const App = () => {
             {doc &&
                 popup &&
                 createPortal(
-                    <PdfHalfCanvas
-                        doc={doc}
-                        pageNumber={page}
-                        layout={layout}
-                        part="slide"
-                    >
+                    <PdfHalfCanvas doc={doc} pageNumber={page} layout={layout} part="slide">
                         {slideOverlay}
                     </PdfHalfCanvas>,
                     popup.mount
