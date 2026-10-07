@@ -38,6 +38,12 @@ export const de: typeof en = {
         step3Body:
             'Schiebe es auf den Beamer und schalte es in den Vollbildmodus. Mit <arrows/> oder <kbd>Leertaste</kbd> wechselst du die Folien.',
     },
+    timer: {
+        label: 'Präsentationszeit',
+        start: 'Timer starten',
+        pause: 'Timer pausieren',
+        reset: 'Timer zurücksetzen',
+    },
     settings: {
         button: 'Einstellungen',
         title: 'Einstellungen',
@@ -56,5 +62,7 @@ export const de: typeof en = {
         currentSlideDescription: 'Zeigt, was das Publikum gerade sieht.',
         nextSlide: 'Nächste Folie',
         nextSlideDescription: 'Vorschau der kommenden Folie.',
+        timer: 'Timer',
+        timerDescription: 'Misst, wie lange deine Präsentation dauert.',
     },
 };

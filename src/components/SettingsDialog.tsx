@@ -26,7 +26,7 @@ type Props = {
 
 export const SettingsDialog = ({ settings, onChange }: Props) => {
     const { t } = useTranslation();
-    const toggle = (key: 'showCurrent' | 'showNext') => (checked: boolean) =>
+    const toggle = (key: 'showCurrent' | 'showNext' | 'showTimer') => (checked: boolean) =>
         onChange({ ...settings, [key]: checked });
 
     const languageItems: { value: LanguagePreference; label: string }[] = [
@@ -126,6 +126,12 @@ export const SettingsDialog = ({ settings, onChange }: Props) => {
                             description={t('settings.nextSlideDescription')}
                             checked={settings.showNext}
                             onCheckedChange={toggle('showNext')}
+                        />
+                        <SwitchRow
+                            label={t('settings.timer')}
+                            description={t('settings.timerDescription')}
+                            checked={settings.showTimer}
+                            onCheckedChange={toggle('showTimer')}
                         />
                     </SettingsSection>
                 </DialogPanel>

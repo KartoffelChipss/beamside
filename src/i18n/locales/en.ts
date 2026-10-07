@@ -33,6 +33,12 @@ export const en = {
         step3Body:
             'Move it to the projector and make it fullscreen. Use <arrows/> or <kbd>Space</kbd> to move between slides.',
     },
+    timer: {
+        label: 'Presentation time',
+        start: 'Start timer',
+        pause: 'Pause timer',
+        reset: 'Reset timer',
+    },
     settings: {
         button: 'Settings',
         title: 'Settings',
@@ -51,5 +57,7 @@ export const en = {
         currentSlideDescription: 'Show what the audience currently sees.',
         nextSlide: 'Next slide',
         nextSlideDescription: 'Preview the upcoming slide.',
+        timer: 'Timer',
+        timerDescription: 'Measure how long your presentation takes.',
     },
 };

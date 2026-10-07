@@ -7,6 +7,7 @@ export type Settings = {
     theme: Theme;
     showCurrent: boolean;
     showNext: boolean;
+    showTimer: boolean;
 };
 
 const DEFAULT_SETTINGS: Settings = {
@@ -14,6 +15,7 @@ const DEFAULT_SETTINGS: Settings = {
     theme: 'system',
     showCurrent: true,
     showNext: true,
+    showTimer: true,
 };
 
 const STORAGE_KEY = 'beamerr-settings';

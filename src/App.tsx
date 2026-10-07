@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from './components/ui/button';
 import { GetStarted } from './components/GetStarted';
 import { PdfHalfCanvas } from './components/PdfHalfCanvas';
+import { PresentationTimer } from './components/PresentationTimer';
 import { SettingsDialog } from './components/SettingsDialog';
 import { useTheme } from './hooks/useTheme';
 import { applyLanguagePreference } from './i18n';
@@ -173,6 +174,7 @@ const App = () => {
                         </Button>
                         <SettingsDialog settings={settings} onChange={updateSettings} />
                         <div className="ml-auto flex items-center gap-2">
+                            {settings.showTimer && <PresentationTimer />}
                             <Button
                                 variant="outline"
                                 size={'icon-sm'}
