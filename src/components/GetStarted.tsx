@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Presentation, Upload } from 'lucide-react';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from './ui/button';
 import {
@@ -21,6 +22,7 @@ type Props = {
 const NOTES_OPTION = '\\setbeameroption{show notes on second screen=right}';
 
 export const GetStarted = ({ onSelect, onFile }: Props) => {
+    const { t } = useTranslation();
     const [dragging, setDragging] = useState(false);
 
     return (
@@ -44,39 +46,43 @@ export const GetStarted = ({ onSelect, onFile }: Props) => {
                 <EmptyMedia variant="icon">
                     <Presentation />
                 </EmptyMedia>
-                <EmptyTitle className="text-2xl">Present Beamer slides with your notes</EmptyTitle>
+                <EmptyTitle className="text-2xl">{t('getStarted.title')}</EmptyTitle>
                 <EmptyDescription className="text-base">
-                    Your audience sees the slides, and you see your notes and the next slide.
-                    Everything runs in your browser and your PDF never leaves your computer.
+                    {t('getStarted.description')}
                 </EmptyDescription>
             </EmptyHeader>
 
             <EmptyContent className="mb-auto max-w-md gap-6">
                 <Button size="xl" onClick={onSelect}>
                     <Upload />
-                    Select a PDF to get started
+                    {t('getStarted.selectPdf')}
                 </Button>
-                <p className="text-muted-foreground">or drop it anywhere in this box</p>
+                <p className="text-muted-foreground">{t('getStarted.dropHint')}</p>
 
                 <ol className="w-full space-y-4 text-left mt-6">
-                    <Step n={1} title="Add notes to your slides (optional)">
-                        Put this in your preamble, then use <code>\note{'{…}'}</code> in your
-                        frames:
-                        <pre className="mt-2 overflow-x-auto rounded-md bg-muted px-3 py-2 text-xs">
+                    <Step n={1} title={t('getStarted.step1Title')}>
+                        <Trans i18nKey="getStarted.step1Intro" components={{ code: <code /> }} />
+                        <pre className="my-2 overflow-x-auto rounded-md bg-muted px-3 py-2 text-xs">
                             {NOTES_OPTION}
                         </pre>
-                        Notes at the bottom (<code>=bottom</code>) or no notes at all work too.
+                        <Trans i18nKey="getStarted.step1Outro" components={{ code: <code /> }} />
                     </Step>
-                    <Step n={2} title="Select the compiled PDF">
-                        Beamerr detects where your notes are.
+                    <Step n={2} title={t('getStarted.step2Title')}>
+                        {t('getStarted.step2Body')}
                     </Step>
-                    <Step n={3} title="Open the slides window">
-                        Move it to the projector and make it fullscreen. Use{' '}
-                        <KbdGroup>
-                            <Kbd>←</Kbd>
-                            <Kbd>→</Kbd>
-                        </KbdGroup>{' '}
-                        or <Kbd>Space</Kbd> to move between slides.
+                    <Step n={3} title={t('getStarted.step3Title')}>
+                        <Trans
+                            i18nKey="getStarted.step3Body"
+                            components={{
+                                arrows: (
+                                    <KbdGroup>
+                                        <Kbd>←</Kbd>
+                                        <Kbd>→</Kbd>
+                                    </KbdGroup>
+                                ),
+                                kbd: <Kbd />,
+                            }}
+                        />
                     </Step>
                 </ol>
             </EmptyContent>

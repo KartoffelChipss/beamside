@@ -1,0 +1,50 @@
+export const en = {
+    app: {
+        changePdf: 'Change PDF',
+        openSlidesWindow: 'Open slides window',
+        focusSlidesWindow: 'Focus slides window',
+        slidesWindowTitle: 'Slides - {{name}}',
+        previousSlide: 'Previous slide',
+        nextSlide: 'Next slide',
+    },
+    panels: {
+        notes: 'Notes',
+        current: 'Current',
+        next: 'Next',
+        noNotes: 'This PDF has no notes.',
+        endOfPresentation: 'End of presentation',
+    },
+    errors: {
+        readFailed: 'Could not read that PDF.',
+        popupBlocked: 'The slides window was blocked. Allow popups for this site and try again.',
+    },
+    getStarted: {
+        title: 'Present Beamer slides with your notes',
+        description:
+            'Your audience sees the slides, and you see your notes and the next slide. Everything runs in your browser and your PDF never leaves your computer.',
+        selectPdf: 'Select a PDF to get started',
+        dropHint: 'or drop it anywhere in this box',
+        step1Title: 'Add notes to your slides (optional)',
+        step1Intro: 'Put this in your preamble, then use <code>\\note{…}</code> in your frames:',
+        step1Outro: 'Notes at the bottom (<code>=bottom</code>) or no notes at all work too.',
+        step2Title: 'Select the compiled PDF',
+        step2Body: 'Beamerr detects where your notes are.',
+        step3Title: 'Open the slides window',
+        step3Body:
+            'Move it to the projector and make it fullscreen. Use <arrows/> or <kbd>Space</kbd> to move between slides.',
+    },
+    settings: {
+        button: 'Settings',
+        title: 'Settings',
+        description: 'Changes apply immediately and are saved in this browser.',
+        general: 'General',
+        language: 'Language',
+        languageDescription: 'Defaults to the language of your browser.',
+        languageSystem: 'Browser default',
+        presenterView: 'Presenter view',
+        currentSlide: 'Current slide',
+        currentSlideDescription: 'Show what the audience currently sees.',
+        nextSlide: 'Next slide',
+        nextSlideDescription: 'Preview the upcoming slide.',
+    },
+};

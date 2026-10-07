@@ -1,9 +1,13 @@
+import type { LanguagePreference } from '@/i18n';
+
 export type Settings = {
+    language: LanguagePreference;
     showCurrent: boolean;
     showNext: boolean;
 };
 
 const DEFAULT_SETTINGS: Settings = {
+    language: 'system',
     showCurrent: true,
     showNext: true,
 };

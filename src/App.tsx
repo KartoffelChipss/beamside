@@ -3,12 +3,14 @@ import { createPortal } from 'react-dom';
 import * as pdfjsLib from 'pdfjs-dist';
 import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from './components/ui/button';
 import { GetStarted } from './components/GetStarted';
 import { PdfHalfCanvas } from './components/PdfHalfCanvas';
 import { SettingsDialog } from './components/SettingsDialog';
 import { useSystemTheme } from './hooks/useSystemTheme';
+import { applyLanguagePreference } from './i18n';
 import { detectNotesLayout, type NotesLayout } from './lib/notes-layout';
 import { loadSettings, saveSettings, type Settings } from './lib/settings';
 import {
@@ -22,9 +24,15 @@ import {
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 type Popup = { win: Window; mount: HTMLDivElement };
+type AppError = 'readFailed' | 'popupBlocked';
+
+const setWindowTitle = (win: Window, title: string) => {
+    win.document.title = title;
+};
 
 const App = () => {
     useSystemTheme();
+    const { t } = useTranslation();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const loadingTaskRef = useRef<PDFDocumentLoadingTask | null>(null);
@@ -33,10 +41,11 @@ const App = () => {
     const [fileName, setFileName] = useState<string>('');
     const [page, setPage] = useState(1);
     const [popup, setPopup] = useState<Popup | null>(null);
-    const [error, setError] = useState<string>('');
+    const [error, setError] = useState<AppError | null>(null);
     const [settings, setSettings] = useState<Settings>(loadSettings);
 
     const updateSettings = (next: Settings) => {
+        if (next.language !== settings.language) applyLanguagePreference(next.language);
         setSettings(next);
         saveSettings(next);
     };
@@ -50,7 +59,7 @@ const App = () => {
 
     const handleFile = async (file: File | undefined) => {
         if (!file) return;
-        setError('');
+        setError(null);
         try {
             const data = new Uint8Array(await file.arrayBuffer());
             const task = pdfjsLib.getDocument({ data, disableFontFace: true });
@@ -64,7 +73,8 @@ const App = () => {
             setFileName(file.name);
             setPage(1);
         } catch (e) {
-            setError(e instanceof Error ? e.message : 'Could not read that PDF.');
+            console.error(e);
+            setError('readFailed');
         }
     };
 
@@ -76,11 +86,9 @@ const App = () => {
         // Must run inside a click handler, otherwise popup blockers will stop it
         const win = window.open('', 'beamerr-slides', 'popup,width=960,height=540');
         if (!win) {
-            setError('The slides window was blocked. Allow popups for this site and try again.');
+            setError('popupBlocked');
             return;
         }
-        win.document.title = `Slides - ${fileName}`;
-
         document.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
             win.document.head.appendChild(node.cloneNode(true));
         });
@@ -95,6 +103,10 @@ const App = () => {
         win.addEventListener('pagehide', () => setPopup(null));
         setPopup({ win, mount });
     };
+
+    useEffect(() => {
+        if (popup) setWindowTitle(popup.win, t('app.slidesWindowTitle', { name: fileName }));
+    }, [popup, fileName, t]);
 
     // Close the popup when the main window goes away
     useEffect(() => {
@@ -153,17 +165,18 @@ const App = () => {
                     <>
                         <Button variant="default" onClick={() => fileInputRef.current?.click()}>
                             <Upload />
-                            Change PDF
+                            {t('app.changePdf')}
                         </Button>
                         <Button variant="secondary" onClick={openSlidesWindow}>
                             {popup ? <PictureInPicture /> : <PictureInPicture2 />}
-                            {popup ? 'Focus slides window' : 'Open slides window'}
+                            {popup ? t('app.focusSlidesWindow') : t('app.openSlidesWindow')}
                         </Button>
                         <SettingsDialog settings={settings} onChange={updateSettings} />
                         <div className="ml-auto flex items-center gap-2">
                             <Button
                                 variant="outline"
                                 size={'icon-sm'}
+                                aria-label={t('app.previousSlide')}
                                 onClick={() => goTo(page - 1)}
                                 disabled={page <= 1}
                             >
@@ -175,6 +188,7 @@ const App = () => {
                             <Button
                                 variant="outline"
                                 size={'icon-sm'}
+                                aria-label={t('app.nextSlide')}
                                 onClick={() => goTo(page + 1)}
                                 disabled={page >= pageCount}
                             >
@@ -183,21 +197,26 @@ const App = () => {
                         </div>
                     </>
                 )}
+                {!doc && (
+                    <div className="ml-auto">
+                        <SettingsDialog settings={settings} onChange={updateSettings} />
+                    </div>
+                )}
             </header>
 
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {error && <p className="text-sm text-red-500">{t(`errors.${error}`)}</p>}
 
             <main className="flex min-h-0 flex-1 gap-3">
                 {doc ? (
                     <>
                         <section className="flex min-w-0 flex-2 flex-col gap-1">
                             <span className="text-xs uppercase tracking-wide opacity-70">
-                                Notes
+                                {t('panels.notes')}
                             </span>
                             <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
                                 {layout === 'none' ? (
                                     <div className="flex h-full items-center justify-center text-sm opacity-70">
-                                        This PDF has no notes.
+                                        {t('panels.noNotes')}
                                     </div>
                                 ) : (
                                     <PdfHalfCanvas
@@ -216,7 +235,7 @@ const App = () => {
                                 {settings.showCurrent && (
                                     <div className="flex min-h-0 flex-1 flex-col gap-1">
                                         <span className="text-xs uppercase tracking-wide opacity-70">
-                                            Current
+                                            {t('panels.current')}
                                         </span>
                                         <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
                                             <PdfHalfCanvas
@@ -231,7 +250,7 @@ const App = () => {
                                 {settings.showNext && (
                                     <div className="flex min-h-0 flex-1 flex-col gap-1">
                                         <span className="text-xs uppercase tracking-wide opacity-70">
-                                            Next
+                                            {t('panels.next')}
                                         </span>
                                         <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
                                             {page < pageCount ? (
@@ -243,7 +262,7 @@ const App = () => {
                                                 />
                                             ) : (
                                                 <div className="flex h-full items-center justify-center bg-black text-sm text-white/70">
-                                                    End of presentation
+                                                    {t('panels.endOfPresentation')}
                                                 </div>
                                             )}
                                         </div>

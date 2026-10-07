@@ -1,6 +1,8 @@
 import { useId, type ReactNode } from 'react';
 import { Settings as SettingsIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
+import { LANGUAGES, type LanguagePreference } from '@/i18n';
 import type { Settings } from '@/lib/settings';
 import { Button } from './ui/button';
 import {
@@ -13,6 +15,7 @@ import {
     DialogTrigger,
 } from './ui/dialog';
 import { Label } from './ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from './ui/select';
 import { Switch } from './ui/switch';
 
 type Props = {
@@ -21,8 +24,18 @@ type Props = {
 };
 
 export const SettingsDialog = ({ settings, onChange }: Props) => {
-    const toggle = (key: keyof Settings) => (checked: boolean) =>
+    const { t } = useTranslation();
+    const toggle = (key: 'showCurrent' | 'showNext') => (checked: boolean) =>
         onChange({ ...settings, [key]: checked });
+
+    const languageItems: { value: LanguagePreference; label: string }[] = [
+        { value: 'system', label: t('settings.languageSystem') },
+        ...Object.entries(LANGUAGES).map(([value, label]) => ({
+            value: value as LanguagePreference,
+            label,
+        })),
+    ];
+    const languageId = useId();
 
     return (
         <Dialog>
@@ -30,28 +43,52 @@ export const SettingsDialog = ({ settings, onChange }: Props) => {
                 render={
                     <Button variant="secondary">
                         <SettingsIcon />
-                        Settings
+                        {t('settings.button')}
                     </Button>
                 }
             />
             <DialogPopup className="sm:max-w-lg">
                 <DialogHeader>
-                    <DialogTitle>Settings</DialogTitle>
-                    <DialogDescription>
-                        Changes apply immediately and are saved in this browser.
-                    </DialogDescription>
+                    <DialogTitle>{t('settings.title')}</DialogTitle>
+                    <DialogDescription>{t('settings.description')}</DialogDescription>
                 </DialogHeader>
                 <DialogPanel className="flex flex-col gap-6">
-                    <SettingsSection title="Presenter view">
+                    <SettingsSection title={t('settings.general')}>
+                        <SettingRow
+                            id={languageId}
+                            label={t('settings.language')}
+                            description={t('settings.languageDescription')}
+                        >
+                            <Select
+                                items={languageItems}
+                                value={settings.language}
+                                onValueChange={(language) =>
+                                    language && onChange({ ...settings, language })
+                                }
+                            >
+                                <SelectTrigger id={languageId} className="w-44 shrink-0">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectPopup>
+                                    {languageItems.map((item) => (
+                                        <SelectItem key={item.value} value={item.value}>
+                                            {item.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectPopup>
+                            </Select>
+                        </SettingRow>
+                    </SettingsSection>
+                    <SettingsSection title={t('settings.presenterView')}>
                         <SwitchRow
-                            label="Current slide"
-                            description="Show what the audience currently sees."
+                            label={t('settings.currentSlide')}
+                            description={t('settings.currentSlideDescription')}
                             checked={settings.showCurrent}
                             onCheckedChange={toggle('showCurrent')}
                         />
                         <SwitchRow
-                            label="Next slide"
-                            description="Preview the upcoming slide."
+                            label={t('settings.nextSlide')}
+                            description={t('settings.nextSlideDescription')}
                             checked={settings.showNext}
                             onCheckedChange={toggle('showNext')}
                         />
@@ -71,6 +108,26 @@ const SettingsSection = ({ title, children }: { title: string; children: ReactNo
     </section>
 );
 
+const SettingRow = ({
+    id,
+    label,
+    description,
+    children,
+}: {
+    id: string;
+    label: string;
+    description?: string;
+    children: ReactNode;
+}) => (
+    <div className="flex items-center justify-between gap-4 px-4 py-3">
+        <div className="flex min-w-0 flex-col gap-1">
+            <Label htmlFor={id}>{label}</Label>
+            {description && <p className="text-sm text-muted-foreground">{description}</p>}
+        </div>
+        {children}
+    </div>
+);
+
 const SwitchRow = ({
     label,
     description,
@@ -84,12 +141,8 @@ const SwitchRow = ({
 }) => {
     const id = useId();
     return (
-        <div className="flex items-center justify-between gap-4 px-4 py-3">
-            <div className="flex min-w-0 flex-col gap-1">
-                <Label htmlFor={id}>{label}</Label>
-                {description && <p className="text-sm text-muted-foreground">{description}</p>}
-            </div>
+        <SettingRow id={id} label={label} description={description}>
             <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
-        </div>
+        </SettingRow>
     );
 };
