@@ -8,6 +8,8 @@ import { Button } from "./components/ui/button";
 import { PdfHalfCanvas } from "./components/PdfHalfCanvas";
 import { useSystemTheme } from "./hooks/useSystemTheme";
 import {
+    ChevronLeft,
+    ChevronRight,
     Eye,
     EyeOff,
     PictureInPicture,
@@ -177,20 +179,22 @@ const App = () => {
                         <div className="ml-auto flex items-center gap-2">
                             <Button
                                 variant="outline"
+                                size={"icon-sm"}
                                 onClick={() => goTo(page - 1)}
                                 disabled={page <= 1}
                             >
-                                Prev
+                                <ChevronLeft />
                             </Button>
                             <span className="text-sm tabular-nums">
                                 {page} / {pageCount}
                             </span>
                             <Button
                                 variant="outline"
+                                size={"icon-sm"}
                                 onClick={() => goTo(page + 1)}
                                 disabled={page >= pageCount}
                             >
-                                Next
+                                <ChevronRight />
                             </Button>
                         </div>
                     </>
