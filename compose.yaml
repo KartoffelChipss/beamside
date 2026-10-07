@@ -1,0 +1,7 @@
+services:
+    beamside:
+        image: kartoffelchipss/beamside:latest
+        container_name: beamside
+        restart: unless-stopped
+        ports:
+            - '${BEAMSIDE_PORT:-8080}:80'
