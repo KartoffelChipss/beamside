@@ -7,6 +7,13 @@ import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { Button } from "./components/ui/button";
 import { PdfHalfCanvas } from "./components/PdfHalfCanvas";
 import { useSystemTheme } from "./hooks/useSystemTheme";
+import {
+    Eye,
+    EyeOff,
+    PictureInPicture,
+    PictureInPicture2,
+    Upload,
+} from "lucide-react";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
@@ -144,12 +151,18 @@ const App = () => {
                     variant="default"
                     onClick={() => fileInputRef.current?.click()}
                 >
+                    <Upload />
                     {doc ? "Change PDF" : "Select PDF"}
                 </Button>
 
                 {doc && (
                     <>
                         <Button variant="secondary" onClick={openSlidesWindow}>
+                            {popup ? (
+                                <PictureInPicture />
+                            ) : (
+                                <PictureInPicture2 />
+                            )}
                             {popup
                                 ? "Focus slides window"
                                 : "Open slides window"}
@@ -158,6 +171,7 @@ const App = () => {
                             variant="secondary"
                             onClick={() => setShowPreviews((v) => !v)}
                         >
+                            {showPreviews ? <EyeOff /> : <Eye />}
                             {showPreviews ? "Hide previews" : "Show previews"}
                         </Button>
                         <div className="ml-auto flex items-center gap-2">
