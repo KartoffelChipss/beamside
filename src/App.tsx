@@ -6,6 +6,7 @@ import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from './components/ui/button';
+import { AppBrand } from './components/AppBrand';
 import { GetStarted } from './components/GetStarted';
 import { PdfHalfCanvas } from './components/PdfHalfCanvas';
 import { PresentationTimer } from './components/PresentationTimer';
@@ -152,8 +153,13 @@ const App = () => {
 
     return (
         <div className="flex h-screen flex-col gap-3 p-4">
-            <header className="flex flex-wrap items-center gap-3">
-                <h1 className="text-xl font-semibold">Beamerr</h1>
+            <header className="flex items-center gap-3">
+                <AppBrand />
+                {doc && (
+                    <span className="min-w-0 truncate text-sm text-muted-foreground" title={fileName}>
+                        {fileName}
+                    </span>
+                )}
 
                 <input
                     ref={fileInputRef}
@@ -162,48 +168,31 @@ const App = () => {
                     className="hidden"
                     onChange={(e) => handleFile(e.target.files?.[0])}
                 />
-                {doc && (
-                    <>
-                        <Button variant="default" onClick={() => fileInputRef.current?.click()}>
-                            <Upload />
-                            {t('app.changePdf')}
-                        </Button>
-                        <Button variant="secondary" onClick={openSlidesWindow}>
-                            {popup ? <PictureInPicture /> : <PictureInPicture2 />}
-                            {popup ? t('app.focusSlidesWindow') : t('app.openSlidesWindow')}
-                        </Button>
-                        <SettingsDialog settings={settings} onChange={updateSettings} />
-                        <div className="ml-auto flex items-center gap-2">
-                            {settings.showTimer && <PresentationTimer />}
+                <div className="ml-auto flex shrink-0 items-center gap-2">
+                    {doc && (
+                        <>
                             <Button
-                                variant="outline"
-                                size={'icon-sm'}
-                                aria-label={t('app.previousSlide')}
-                                onClick={() => goTo(page - 1)}
-                                disabled={page <= 1}
+                                variant="secondary"
+                                aria-label={t('app.changePdf')}
+                                onClick={() => fileInputRef.current?.click()}
                             >
-                                <ChevronLeft />
+                                <Upload />
+                                <span className="max-md:sr-only">{t('app.changePdf')}</span>
                             </Button>
-                            <span className="text-sm tabular-nums">
-                                {page} / {pageCount}
-                            </span>
                             <Button
-                                variant="outline"
-                                size={'icon-sm'}
-                                aria-label={t('app.nextSlide')}
-                                onClick={() => goTo(page + 1)}
-                                disabled={page >= pageCount}
+                                variant="secondary"
+                                aria-label={popup ? t('app.focusSlidesWindow') : t('app.openSlidesWindow')}
+                                onClick={openSlidesWindow}
                             >
-                                <ChevronRight />
+                                {popup ? <PictureInPicture /> : <PictureInPicture2 />}
+                                <span className="max-md:sr-only">
+                                    {popup ? t('app.focusSlidesWindow') : t('app.openSlidesWindow')}
+                                </span>
                             </Button>
-                        </div>
-                    </>
-                )}
-                {!doc && (
-                    <div className="ml-auto">
-                        <SettingsDialog settings={settings} onChange={updateSettings} />
-                    </div>
-                )}
+                        </>
+                    )}
+                    <SettingsDialog settings={settings} onChange={updateSettings} />
+                </div>
             </header>
 
             {error && <p className="text-sm text-red-500">{t(`errors.${error}`)}</p>}
@@ -280,6 +269,35 @@ const App = () => {
                     />
                 )}
             </main>
+
+            {doc && (
+                <footer className="flex items-center justify-between gap-3 sm:grid sm:grid-cols-[1fr_auto_1fr]">
+                    <div className="flex min-w-0">{settings.showTimer && <PresentationTimer />}</div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            aria-label={t('app.previousSlide')}
+                            onClick={() => goTo(page - 1)}
+                            disabled={page <= 1}
+                        >
+                            <ChevronLeft />
+                        </Button>
+                        <span className="min-w-16 text-center font-mono text-sm">
+                            {page} / {pageCount}
+                        </span>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            aria-label={t('app.nextSlide')}
+                            onClick={() => goTo(page + 1)}
+                            disabled={page >= pageCount}
+                        >
+                            <ChevronRight />
+                        </Button>
+                    </div>
+                </footer>
+            )}
 
             {doc &&
                 popup &&

@@ -49,9 +49,9 @@ export const SettingsDialog = ({ settings, onChange }: Props) => {
         <Dialog>
             <DialogTrigger
                 render={
-                    <Button variant="secondary">
+                    <Button variant="secondary" aria-label={t('settings.button')}>
                         <SettingsIcon />
-                        {t('settings.button')}
+                        <span className="max-md:sr-only">{t('settings.button')}</span>
                     </Button>
                 }
             />
