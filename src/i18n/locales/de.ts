@@ -55,6 +55,41 @@ export const de: typeof en = {
         restore: 'Ursprüngliche Größe',
         close: 'Folienfenster schließen',
     },
+    help: {
+        button: 'Hilfe',
+        title: 'So funktioniert Beamside',
+        description:
+            'Zeig deine Beamer-Folien auf dem Beamer, während du deine Notizen und die nächste Folie siehst.',
+        withNotes: {
+            title: 'Folien mit Notizen',
+            setup: 'Beamer kann deine Notizen in der PDF rechts neben jede Folie setzen. Füge dies in deine Präambel ein:',
+            bottom: 'Oder setze sie stattdessen darunter:',
+            write: 'Schreibe deine Notizen mit <code>\\note{…}</code> in oder nach einem Frame und kompiliere wie gewohnt. Beamside erkennt, wo die Notizen sind, und teilt jede Seite auf, sodass das Publikum nur die Folie sieht.',
+        },
+        withoutNotes: {
+            title: 'Folien ohne Notizen',
+            body: 'Jede andere PDF funktioniert so, wie sie ist. Das Publikum sieht die Folien und du siehst sie in deiner Referentenansicht. Ohne Notizen zeigt die Vorlage <b>Nebeneinander</b> in den Einstellungen die aktuelle und die nächste Folie.',
+        },
+        presenting: {
+            title: 'Präsentieren',
+            select: 'Wähle deine PDF aus oder ziehe sie auf den Startbildschirm.',
+            open: 'Klicke auf <b>Folienfenster öffnen</b>, schiebe das Fenster auf den Beamer und drücke <kbd>F</kbd> für den Vollbildmodus.',
+            presenter: 'Behalte dieses Fenster als Referentenansicht auf deinem eigenen Bildschirm.',
+        },
+        shortcuts: {
+            title: 'Tastenkürzel',
+            next: 'Nächste Folie',
+            previous: 'Vorherige Folie',
+            firstLast: 'Erste oder letzte Folie',
+            fullscreen: 'Folienfenster im Vollbild',
+        },
+        tools: {
+            title: 'Werkzeuge',
+            laser: '<b>Laserpointer:</b> bewege die Maus über die aktuelle Folie oder das Folienfenster, um auf etwas zu zeigen.',
+            timer: '<b>Timer:</b> starte, pausiere und setze ihn unten links zurück.',
+            layout: '<b>Anordnung:</b> lege in den Einstellungen unter Referentenansicht fest, was du wo siehst.',
+        },
+    },
     timer: {
         label: 'Präsentationszeit',
         start: 'Timer starten',

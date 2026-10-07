@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from './components/ui/button';
 import { AppBrand } from './components/AppBrand';
 import { GetStarted } from './components/GetStarted';
+import { HelpDialog } from './components/HelpDialog';
 import { PdfHalfCanvas, type LaserPosition } from './components/PdfHalfCanvas';
 import { PresentationTimer } from './components/PresentationTimer';
 import { PresenterGrid } from './components/PresenterGrid';
@@ -237,6 +238,7 @@ const App = () => {
                             />
                         </>
                     )}
+                    <HelpDialog />
                     <SettingsDialog settings={settings} onChange={updateSettings} />
                 </div>
             </header>

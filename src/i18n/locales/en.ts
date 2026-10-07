@@ -50,6 +50,41 @@ export const en = {
         restore: 'Restore size',
         close: 'Close slides window',
     },
+    help: {
+        button: 'Help',
+        title: 'How to use Beamside',
+        description:
+            'Show your Beamer slides on the projector while you see your notes and what comes next.',
+        withNotes: {
+            title: 'Slides with notes',
+            setup: 'Beamer can put your notes on the right of each slide in the PDF. Add this to your preamble:',
+            bottom: 'Or put them at the bottom instead:',
+            write: 'Write your notes with <code>\\note{…}</code> inside or after a frame and compile as usual. Beamside detects where the notes are and splits each page, so the audience only sees the slide.',
+        },
+        withoutNotes: {
+            title: 'Slides without notes',
+            body: 'Any other PDF works as it is. The audience sees the slides and you see them in your presenter view. Without notes, the <b>Side by side</b> preset in Settings shows the current and next slide.',
+        },
+        presenting: {
+            title: 'Presenting',
+            select: 'Select your PDF, or drop it onto the start screen.',
+            open: 'Click <b>Open slides window</b>, move that window to the projector and press <kbd>F</kbd> for fullscreen.',
+            presenter: 'Keep this window on your own screen as your presenter view.',
+        },
+        shortcuts: {
+            title: 'Keyboard shortcuts',
+            next: 'Next slide',
+            previous: 'Previous slide',
+            firstLast: 'First or last slide',
+            fullscreen: 'Slides window fullscreen',
+        },
+        tools: {
+            title: 'Tools',
+            laser: '<b>Laser pointer:</b> move the mouse over the current slide or the slides window to point at something.',
+            timer: '<b>Timer:</b> start, pause and reset it at the bottom left.',
+            layout: '<b>Layout:</b> choose what you see and where in Settings, under Presenter view.',
+        },
+    },
     timer: {
         label: 'Presentation time',
         start: 'Start timer',
