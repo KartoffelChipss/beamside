@@ -1,13 +1,17 @@
 import type { LanguagePreference } from '@/i18n';
 
+export type Theme = 'system' | 'light' | 'dark';
+
 export type Settings = {
     language: LanguagePreference;
+    theme: Theme;
     showCurrent: boolean;
     showNext: boolean;
 };
 
 const DEFAULT_SETTINGS: Settings = {
     language: 'system',
+    theme: 'system',
     showCurrent: true,
     showNext: true,
 };

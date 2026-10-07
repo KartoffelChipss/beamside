@@ -1,9 +1,9 @@
 import { useId, type ReactNode } from 'react';
-import { Settings as SettingsIcon } from 'lucide-react';
+import { Monitor, Moon, Settings as SettingsIcon, Sun } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { LANGUAGES, type LanguagePreference } from '@/i18n';
-import type { Settings } from '@/lib/settings';
+import type { Settings, Theme } from '@/lib/settings';
 import { Button } from './ui/button';
 import {
     Dialog,
@@ -17,6 +17,7 @@ import {
 import { Label } from './ui/label';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from './ui/select';
 import { Switch } from './ui/switch';
+import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 
 type Props = {
     settings: Settings;
@@ -36,6 +37,13 @@ export const SettingsDialog = ({ settings, onChange }: Props) => {
         })),
     ];
     const languageId = useId();
+    const themeId = useId();
+
+    const themeItems: { value: Theme; label: string; icon: ReactNode }[] = [
+        { value: 'system', label: t('settings.themeSystem'), icon: <Monitor /> },
+        { value: 'light', label: t('settings.themeLight'), icon: <Sun /> },
+        { value: 'dark', label: t('settings.themeDark'), icon: <Moon /> },
+    ];
 
     return (
         <Dialog>
@@ -77,6 +85,33 @@ export const SettingsDialog = ({ settings, onChange }: Props) => {
                                     ))}
                                 </SelectPopup>
                             </Select>
+                        </SettingRow>
+                        <SettingRow
+                            id={themeId}
+                            label={t('settings.theme')}
+                            description={t('settings.themeDescription')}
+                        >
+                            <ToggleGroup
+                                id={themeId}
+                                aria-label={t('settings.theme')}
+                                variant="outline"
+                                className="shrink-0"
+                                value={[settings.theme]}
+                                onValueChange={([theme]) =>
+                                    theme && onChange({ ...settings, theme: theme as Theme })
+                                }
+                            >
+                                {themeItems.map((item) => (
+                                    <ToggleGroupItem
+                                        key={item.value}
+                                        value={item.value}
+                                        aria-label={item.label}
+                                        title={item.label}
+                                    >
+                                        {item.icon}
+                                    </ToggleGroupItem>
+                                ))}
+                            </ToggleGroup>
                         </SettingRow>
                     </SettingsSection>
                     <SettingsSection title={t('settings.presenterView')}>

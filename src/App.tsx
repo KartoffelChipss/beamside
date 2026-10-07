@@ -9,7 +9,7 @@ import { Button } from './components/ui/button';
 import { GetStarted } from './components/GetStarted';
 import { PdfHalfCanvas } from './components/PdfHalfCanvas';
 import { SettingsDialog } from './components/SettingsDialog';
-import { useSystemTheme } from './hooks/useSystemTheme';
+import { useTheme } from './hooks/useTheme';
 import { applyLanguagePreference } from './i18n';
 import { detectNotesLayout, type NotesLayout } from './lib/notes-layout';
 import { loadSettings, saveSettings, type Settings } from './lib/settings';
@@ -31,7 +31,6 @@ const setWindowTitle = (win: Window, title: string) => {
 };
 
 const App = () => {
-    useSystemTheme();
     const { t } = useTranslation();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -43,6 +42,7 @@ const App = () => {
     const [popup, setPopup] = useState<Popup | null>(null);
     const [error, setError] = useState<AppError | null>(null);
     const [settings, setSettings] = useState<Settings>(loadSettings);
+    useTheme(settings.theme);
 
     const updateSettings = (next: Settings) => {
         if (next.language !== settings.language) applyLanguagePreference(next.language);
