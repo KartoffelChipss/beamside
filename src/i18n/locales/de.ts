@@ -85,10 +85,31 @@ export const de: typeof en = {
         },
         tools: {
             title: 'Werkzeuge',
-            laser: '<b>Laserpointer:</b> bewege die Maus über die aktuelle Folie oder das Folienfenster, um auf etwas zu zeigen.',
+            laser: '<b>Laserpointer:</b> wähle ihn unten rechts in der Werkzeugleiste und bewege die Maus über die aktuelle Folie oder das Folienfenster.',
+            draw: '<b>Stift und Radierer:</b> zeichne auf die aktuelle Folie oder das Folienfenster, das Publikum sieht es sofort. Der Mülleimer löscht alle Zeichnungen.',
             timer: '<b>Timer:</b> starte, pausiere und setze ihn unten links zurück.',
             layout: '<b>Anordnung:</b> lege in den Einstellungen unter Referentenansicht fest, was du wo siehst.',
         },
+    },
+    toolbar: {
+        label: 'Zeichenwerkzeuge',
+        none: 'Kein Werkzeug',
+        laser: 'Laserpointer',
+        pen: 'Stift',
+        eraser: 'Radierer',
+        clear: 'Alle Zeichnungen löschen',
+        penOptions: 'Stiftfarbe und -größe',
+        color: 'Farbe',
+        size: 'Größe',
+        colors: {
+            red: 'Rot',
+            yellow: 'Gelb',
+            green: 'Grün',
+            blue: 'Blau',
+            white: 'Weiß',
+            black: 'Schwarz',
+        },
+        sizes: { small: 'Dünn', medium: 'Mittel', large: 'Dick' },
     },
     timer: {
         label: 'Präsentationszeit',
@@ -138,8 +159,12 @@ export const de: typeof en = {
         },
         timer: 'Timer',
         timerDescription: 'Misst, wie lange deine Präsentation dauert.',
-        laserPointer: 'Laserpointer',
-        laserPointerDescription:
-            'Zeige mit der Maus auf deine Folien, im Folienfenster oder auf der aktuellen Folie.',
+        toolbar: 'Werkzeugleiste',
+        toolbarItems: {
+            laser: 'Zeige mit der Maus auf deine Folien.',
+            pen: 'Zeichne auf deine Folien, das Publikum sieht es sofort.',
+            eraser: 'Fahre über eine Zeichnung, um sie zu entfernen.',
+            clear: 'Entfernt alle Zeichnungen auf einmal.',
+        },
     },
 };

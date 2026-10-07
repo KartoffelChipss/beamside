@@ -80,10 +80,31 @@ export const en = {
         },
         tools: {
             title: 'Tools',
-            laser: '<b>Laser pointer:</b> move the mouse over the current slide or the slides window to point at something.',
+            laser: '<b>Laser pointer:</b> pick it in the toolbar at the bottom right, then move the mouse over the current slide or the slides window.',
+            draw: '<b>Pen and eraser:</b> draw on the current slide or the slides window, the audience sees it live. The trash can clears all drawings.',
             timer: '<b>Timer:</b> start, pause and reset it at the bottom left.',
             layout: '<b>Layout:</b> choose what you see and where in Settings, under Presenter view.',
         },
+    },
+    toolbar: {
+        label: 'Drawing tools',
+        none: 'No tool',
+        laser: 'Laser pointer',
+        pen: 'Pen',
+        eraser: 'Eraser',
+        clear: 'Clear all drawings',
+        penOptions: 'Pen color and size',
+        color: 'Color',
+        size: 'Size',
+        colors: {
+            red: 'Red',
+            yellow: 'Yellow',
+            green: 'Green',
+            blue: 'Blue',
+            white: 'White',
+            black: 'Black',
+        },
+        sizes: { small: 'Thin', medium: 'Medium', large: 'Thick' },
     },
     timer: {
         label: 'Presentation time',
@@ -133,8 +154,12 @@ export const en = {
         },
         timer: 'Timer',
         timerDescription: 'Measure how long your presentation takes.',
-        laserPointer: 'Laser pointer',
-        laserPointerDescription:
-            'Point at your slides with the mouse, in the slides window or on the current slide.',
+        toolbar: 'Toolbar',
+        toolbarItems: {
+            laser: 'Point at your slides with the mouse.',
+            pen: 'Draw on your slides, the audience sees it live.',
+            eraser: 'Rub over a drawing to remove it.',
+            clear: 'Remove all drawings at once.',
+        },
     },
 };

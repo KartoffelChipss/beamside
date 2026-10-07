@@ -112,7 +112,7 @@ export const HelpDialog = () => {
 
                     <HelpSection title={t('help.tools.title')}>
                         <ul className="space-y-2">
-                            {(['laser', 'timer', 'layout'] as const).map((tool) => (
+                            {(['laser', 'draw', 'timer', 'layout'] as const).map((tool) => (
                                 <li key={tool}>
                                     <Trans i18nKey={`help.tools.${tool}`} components={richText} />
                                 </li>

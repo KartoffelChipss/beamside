@@ -9,16 +9,20 @@ import { Button } from './components/ui/button';
 import { AppBrand } from './components/AppBrand';
 import { GetStarted } from './components/GetStarted';
 import { HelpDialog } from './components/HelpDialog';
-import { PdfHalfCanvas, type LaserPosition } from './components/PdfHalfCanvas';
+import { AnnotationToolbar } from './components/AnnotationToolbar';
+import { PdfHalfCanvas } from './components/PdfHalfCanvas';
+import { SlideOverlay } from './components/SlideOverlay';
 import { PresentationTimer } from './components/PresentationTimer';
 import { PresenterGrid } from './components/PresenterGrid';
 import { SlidesWindowButton } from './components/SlidesWindowButton';
 import { SlidesWindowHint } from './components/SlidesWindowHint';
 import { SettingsDialog } from './components/SettingsDialog';
+import { useAnnotations } from './hooks/useAnnotations';
 import { useTheme } from './hooks/useTheme';
 import { applyLanguagePreference } from './i18n';
 import { detectNotesLayout, type NotesLayout } from './lib/notes-layout';
 import { dismissHint, isHintDismissed } from './lib/hints';
+import { PEN_COLORS, PEN_SIZES } from './lib/annotations';
 import { addFullscreenShortcuts, openPopup, toggleFullscreen } from './lib/slides-window';
 import { loadSettings, saveSettings, type Settings } from './lib/settings';
 import { ChevronLeft, ChevronRight, Upload } from 'lucide-react';
@@ -27,8 +31,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 type Popup = { win: Window; mount: HTMLDivElement };
 type AppError = 'readFailed' | 'popupBlocked';
-
-const LASER_IDLE_MS = 2500;
 
 const setWindowTitle = (win: Window, title: string) => {
     win.document.title = title;
@@ -45,8 +47,6 @@ const App = () => {
     const [fileName, setFileName] = useState<string>('');
     const [page, setPage] = useState(1);
     const [popup, setPopup] = useState<Popup | null>(null);
-    const [laser, setLaser] = useState<LaserPosition | null>(null);
-    const laserTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     const [error, setError] = useState<AppError | null>(null);
     const [settings, setSettings] = useState<Settings>(loadSettings);
     const [slidesHintDismissed, setSlidesHintDismissed] = useState(() =>
@@ -62,12 +62,14 @@ const App = () => {
 
     const pageCount = doc?.numPages ?? 0;
 
-    const moveLaser = (position: LaserPosition | null) => {
-        clearTimeout(laserTimeoutRef.current);
-        setLaser(position);
-        if (position) laserTimeoutRef.current = setTimeout(() => setLaser(null), LASER_IDLE_MS);
-    };
-    const laserProps = settings.laserPointer ? { laser, onLaserMove: moveLaser } : {};
+    const annotations = useAnnotations({
+        color: PEN_COLORS[settings.pen.color],
+        size: PEN_SIZES[settings.pen.size],
+    });
+    // A tool hidden in settings can't stay selected
+    const tool =
+        annotations.tool !== 'none' && settings.toolbar[annotations.tool] ? annotations.tool : 'none';
+    const slideOverlay = <SlideOverlay {...annotations.forPage(page)} tool={tool} />;
 
     const goTo = useCallback(
         (n: number) => setPage((_) => Math.min(Math.max(n, 1), Math.max(pageCount, 1))),
@@ -85,6 +87,7 @@ const App = () => {
             const previousTask = loadingTaskRef.current;
             loadingTaskRef.current = task;
             setDoc(loaded);
+            annotations.clearAll();
             setLayout(detectedLayout);
             previousTask?.destroy();
             setFileName(file.name);
@@ -284,8 +287,9 @@ const App = () => {
                                             pageNumber={page}
                                             layout={layout}
                                             part="slide"
-                                            {...laserProps}
-                                        />
+                                        >
+                                            {slideOverlay}
+                                        </PdfHalfCanvas>
                                     )}
                                     {pane === 'next' &&
                                         (page < pageCount ? (
@@ -340,6 +344,16 @@ const App = () => {
                             <ChevronRight />
                         </Button>
                     </div>
+                    <div className="flex min-w-0 justify-end">
+                        <AnnotationToolbar
+                            items={settings.toolbar}
+                            tool={tool}
+                            onToolChange={annotations.selectTool}
+                            pen={settings.pen}
+                            onPenChange={(pen) => updateSettings({ ...settings, pen })}
+                            onClear={annotations.clearAll}
+                        />
+                    </div>
                 </footer>
             )}
 
@@ -351,8 +365,9 @@ const App = () => {
                         pageNumber={page}
                         layout={layout}
                         part="slide"
-                        {...laserProps}
-                    />,
+                    >
+                        {slideOverlay}
+                    </PdfHalfCanvas>,
                     popup.mount
                 )}
         </div>

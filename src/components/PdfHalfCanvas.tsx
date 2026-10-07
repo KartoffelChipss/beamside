@@ -1,9 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import type { NotesLayout } from '@/lib/notes-layout';
-
-// Position on the slide as a fraction of its width and height
-export type LaserPosition = { x: number; y: number };
 
 type Props = {
     doc: PDFDocumentProxy;
@@ -11,8 +8,7 @@ type Props = {
     layout: NotesLayout;
     part: 'slide' | 'notes';
     background?: string;
-    laser?: LaserPosition | null;
-    onLaserMove?: (position: LaserPosition | null) => void;
+    children?: ReactNode;
 };
 
 export const PdfHalfCanvas = ({
@@ -21,8 +17,7 @@ export const PdfHalfCanvas = ({
     layout,
     part,
     background = '#000',
-    laser,
-    onLaserMove,
+    children,
 }: Props) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -125,45 +120,10 @@ export const PdfHalfCanvas = ({
                 overflow: 'hidden',
             }}
         >
-            <div
-                style={{
-                    position: 'relative',
-                    lineHeight: 0,
-                    cursor: onLaserMove ? 'none' : undefined,
-                }}
-                onPointerMove={
-                    onLaserMove &&
-                    ((e) => {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        onLaserMove({
-                            x: (e.clientX - rect.left) / rect.width,
-                            y: (e.clientY - rect.top) / rect.height,
-                        });
-                    })
-                }
-                onPointerLeave={onLaserMove && (() => onLaserMove(null))}
-            >
+            <div style={{ position: 'relative', lineHeight: 0 }}>
                 <canvas ref={canvasRef} />
-                {laser && <LaserDot position={laser} />}
+                {children}
             </div>
         </div>
     );
 };
-
-const LaserDot = ({ position }: { position: LaserPosition }) => (
-    <div
-        aria-hidden
-        style={{
-            position: 'absolute',
-            left: `${position.x * 100}%`,
-            top: `${position.y * 100}%`,
-            width: 'max(12px, 2.2%)',
-            aspectRatio: '1',
-            borderRadius: '50%',
-            transform: 'translate(-50%, -50%)',
-            pointerEvents: 'none',
-            background: 'radial-gradient(circle, #fff 0%, #ff2a2a 35%, #e00000 70%)',
-            boxShadow: '0 0 6px 2px rgb(255 30 30 / 70%), 0 0 18px 6px rgb(255 0 0 / 35%)',
-        }}
-    />
-);

@@ -3,7 +3,7 @@ import { Monitor, Moon, Settings as SettingsIcon, Sun } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { LANGUAGES, type LanguagePreference } from '@/i18n';
-import type { Settings, Theme } from '@/lib/settings';
+import { TOOLBAR_ITEMS, type Settings, type Theme } from '@/lib/settings';
 import { PresenterLayoutSettings } from './PresenterLayoutSettings';
 import { Button } from './ui/button';
 import {
@@ -126,14 +126,22 @@ export const SettingsDialog = ({ settings, onChange }: Props) => {
                             checked={settings.showTimer}
                             onCheckedChange={(showTimer) => onChange({ ...settings, showTimer })}
                         />
-                        <SwitchRow
-                            label={t('settings.laserPointer')}
-                            description={t('settings.laserPointerDescription')}
-                            checked={settings.laserPointer}
-                            onCheckedChange={(laserPointer) =>
-                                onChange({ ...settings, laserPointer })
-                            }
-                        />
+                    </SettingsSection>
+                    <SettingsSection title={t('settings.toolbar')}>
+                        {TOOLBAR_ITEMS.map((item) => (
+                            <SwitchRow
+                                key={item}
+                                label={t(`toolbar.${item}`)}
+                                description={t(`settings.toolbarItems.${item}`)}
+                                checked={settings.toolbar[item]}
+                                onCheckedChange={(checked) =>
+                                    onChange({
+                                        ...settings,
+                                        toolbar: { ...settings.toolbar, [item]: checked },
+                                    })
+                                }
+                            />
+                        ))}
                     </SettingsSection>
                 </DialogPanel>
             </DialogPopup>
