@@ -7,13 +7,13 @@ import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { Button } from './components/ui/button';
 import { GetStarted } from './components/GetStarted';
 import { PdfHalfCanvas } from './components/PdfHalfCanvas';
+import { SettingsDialog } from './components/SettingsDialog';
 import { useSystemTheme } from './hooks/useSystemTheme';
 import { detectNotesLayout, type NotesLayout } from './lib/notes-layout';
+import { loadSettings, saveSettings, type Settings } from './lib/settings';
 import {
     ChevronLeft,
     ChevronRight,
-    Eye,
-    EyeOff,
     PictureInPicture,
     PictureInPicture2,
     Upload,
@@ -34,7 +34,12 @@ const App = () => {
     const [page, setPage] = useState(1);
     const [popup, setPopup] = useState<Popup | null>(null);
     const [error, setError] = useState<string>('');
-    const [showPreviews, setShowPreviews] = useState(true);
+    const [settings, setSettings] = useState<Settings>(loadSettings);
+
+    const updateSettings = (next: Settings) => {
+        setSettings(next);
+        saveSettings(next);
+    };
 
     const pageCount = doc?.numPages ?? 0;
 
@@ -101,6 +106,7 @@ const App = () => {
     // Keyboard navigation in both windows
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
+            if (e.target instanceof Element && e.target.closest('[role=dialog]')) return;
             switch (e.key) {
                 case 'ArrowRight':
                 case 'ArrowDown':
@@ -153,10 +159,7 @@ const App = () => {
                             {popup ? <PictureInPicture /> : <PictureInPicture2 />}
                             {popup ? 'Focus slides window' : 'Open slides window'}
                         </Button>
-                        <Button variant="secondary" onClick={() => setShowPreviews((v) => !v)}>
-                            {showPreviews ? <EyeOff /> : <Eye />}
-                            {showPreviews ? 'Hide previews' : 'Show previews'}
-                        </Button>
+                        <SettingsDialog settings={settings} onChange={updateSettings} />
                         <div className="ml-auto flex items-center gap-2">
                             <Button
                                 variant="outline"
@@ -208,40 +211,44 @@ const App = () => {
                             </div>
                         </section>
 
-                        {showPreviews && (
+                        {(settings.showCurrent || settings.showNext) && (
                             <aside className="flex min-w-0 flex-1 flex-col gap-3">
-                                <div className="flex min-h-0 flex-1 flex-col gap-1">
-                                    <span className="text-xs uppercase tracking-wide opacity-70">
-                                        Current
-                                    </span>
-                                    <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
-                                        <PdfHalfCanvas
-                                            doc={doc}
-                                            pageNumber={page}
-                                            layout={layout}
-                                            part="slide"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex min-h-0 flex-1 flex-col gap-1">
-                                    <span className="text-xs uppercase tracking-wide opacity-70">
-                                        Next
-                                    </span>
-                                    <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
-                                        {page < pageCount ? (
+                                {settings.showCurrent && (
+                                    <div className="flex min-h-0 flex-1 flex-col gap-1">
+                                        <span className="text-xs uppercase tracking-wide opacity-70">
+                                            Current
+                                        </span>
+                                        <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
                                             <PdfHalfCanvas
                                                 doc={doc}
-                                                pageNumber={page + 1}
+                                                pageNumber={page}
                                                 layout={layout}
                                                 part="slide"
                                             />
-                                        ) : (
-                                            <div className="flex h-full items-center justify-center bg-black text-sm text-white/70">
-                                                End of presentation
-                                            </div>
-                                        )}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
+                                {settings.showNext && (
+                                    <div className="flex min-h-0 flex-1 flex-col gap-1">
+                                        <span className="text-xs uppercase tracking-wide opacity-70">
+                                            Next
+                                        </span>
+                                        <div className="min-h-0 flex-1 overflow-hidden rounded-md border">
+                                            {page < pageCount ? (
+                                                <PdfHalfCanvas
+                                                    doc={doc}
+                                                    pageNumber={page + 1}
+                                                    layout={layout}
+                                                    part="slide"
+                                                />
+                                            ) : (
+                                                <div className="flex h-full items-center justify-center bg-black text-sm text-white/70">
+                                                    End of presentation
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </aside>
                         )}
                     </>
