@@ -86,7 +86,7 @@ const App = () => {
             return;
         }
         // Must run inside a click handler, otherwise popup blockers will stop it
-        const win = window.open('', 'beamerr-slides', 'popup,width=960,height=540');
+        const win = window.open('', 'beamside-slides', 'popup,width=960,height=540');
         if (!win) {
             setError('popupBlocked');
             return;

@@ -18,11 +18,19 @@ const DEFAULT_SETTINGS: Settings = {
     showTimer: true,
 };
 
-const STORAGE_KEY = 'beamerr-settings';
+const STORAGE_KEY = 'beamside-settings';
+const LEGACY_STORAGE_KEY = 'beamerr-settings';
 
 export const loadSettings = (): Settings => {
     try {
-        return { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') };
+        return {
+            ...DEFAULT_SETTINGS,
+            ...JSON.parse(
+                localStorage.getItem(STORAGE_KEY) ??
+                    localStorage.getItem(LEGACY_STORAGE_KEY) ??
+                    '{}'
+            ),
+        };
     } catch {
         return DEFAULT_SETTINGS;
     }

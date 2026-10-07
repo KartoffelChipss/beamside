@@ -33,7 +33,7 @@ export const de: typeof en = {
         step1Outro:
             'Notizen unten (<code>=bottom</code>) oder gar keine Notizen funktionieren auch.',
         step2Title: 'Die kompilierte PDF auswählen',
-        step2Body: 'Beamerr erkennt, wo deine Notizen sind.',
+        step2Body: 'Beamside erkennt, wo deine Notizen sind.',
         step3Title: 'Das Folienfenster öffnen',
         step3Body:
             'Schiebe es auf den Beamer und schalte es in den Vollbildmodus. Mit <arrows/> oder <kbd>Leertaste</kbd> wechselst du die Folien.',

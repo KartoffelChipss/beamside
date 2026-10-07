@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react';
-import { Presentation, Upload } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { BrandMark } from './AppBrand';
 import { Button } from './ui/button';
 import {
     Empty,
@@ -44,7 +45,7 @@ export const GetStarted = ({ onSelect, onFile }: Props) => {
         >
             <EmptyHeader className="mt-auto max-w-md">
                 <EmptyMedia variant="icon">
-                    <Presentation />
+                    <BrandMark className="size-5" />
                 </EmptyMedia>
                 <EmptyTitle className="text-2xl">{t('getStarted.title')}</EmptyTitle>
                 <EmptyDescription className="text-base">

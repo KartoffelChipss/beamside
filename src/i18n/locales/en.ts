@@ -28,7 +28,7 @@ export const en = {
         step1Intro: 'Put this in your preamble, then use <code>\\note{…}</code> in your frames:',
         step1Outro: 'Notes at the bottom (<code>=bottom</code>) or no notes at all work too.',
         step2Title: 'Select the compiled PDF',
-        step2Body: 'Beamerr detects where your notes are.',
+        step2Body: 'Beamside detects where your notes are.',
         step3Title: 'Open the slides window',
         step3Body:
             'Move it to the projector and make it fullscreen. Use <arrows/> or <kbd>Space</kbd> to move between slides.',
