@@ -4,9 +4,12 @@
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>beamerr</title>
-      <script type="module" crossorigin src="/assets/index-BCgbjn0m.js"></script>
-      <link rel="stylesheet" crossorigin href="/assets/index-xHQ-eM5e.css">
+        <title>Beamside</title>
+        <meta name="description" content="Present LaTeX Beamer slides with your notes on a second screen." />
+        <meta name="theme-color" content="#3B3BC4" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
+      <script type="module" crossorigin src="/assets/index-DQOc48fM.js"></script>
+      <link rel="stylesheet" crossorigin href="/assets/index-BCIlWmGc.css">
     <link rel="manifest" href="/manifest.webmanifest"></head>
     <body>
         <div id="root"></div>
@@ -14,7 +17,11 @@
             (function () {
                 var theme = 'system';
                 try {
-                    var settings = JSON.parse(localStorage.getItem('beamerr-settings') || '{}');
+                    var settings = JSON.parse(
+                        localStorage.getItem('beamside-settings') ||
+                            localStorage.getItem('beamerr-settings') ||
+                            '{}'
+                    );
                     if (settings.theme) theme = settings.theme;
                 } catch (e) {}
                 var dark =
